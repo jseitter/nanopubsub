@@ -1,0 +1,29 @@
+
+nanoPubSub uses a simple Messageformat on the wire.
+All messages are plain text, binary content must be encoded
+with mechanisms like Base64.
+All messages must be <= 1024 bytes.
+
+Message Types
+-------------
+
+subscription message.
+This message will subscribe the client with a 
+given id for a given topic at the broker
+
+#sub#<clientId>#<topic>#
+
+un-subscription message
+This message will unsubscribe the given client 
+from the given topic at the broker 
+
+#unsub#<clientId>#<topic>#
+
+
+Standard message
+This is a standard message which is sent by a client
+to the broker and is published to all registered clients.
+The sending client will not receive the message again
+
+#msg#<clientId>#<topic>#<message>#
+
