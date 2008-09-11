@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ====================================================================== 
+     11.09.2008 16:53:31                                                        
+
+     nanoPubSub   
+     buildfile for the nanoPubSub library
+                   
+     jseitter                                                              
+     ====================================================================== -->
+<project name="nanoPubSub" default="jar">
+    <description>
+            nanoPubSub - embedded publish subscribe messaging
+    </description>
+
+	
+	<target name="jar" depends="compile">
+		<jar destfile="build/nanopubsub.jar">
+		<fileset dir="build" id="class_files">
+    		<include name="**/*.class"/>
+    		<exclude name="*.jar"/>
+			<exclude name="**/tests/**"/>
+		</fileset>
+		</jar>
+	</target>
+	
+	<target name="compile">
+		<mkdir dir="build"/>
+		<javac classpath="lib/log4j-1.2.13.jar" destdir="build/" srcdir="src/java"/>
+	</target>
+
+</project>
