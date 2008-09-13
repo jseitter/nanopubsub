@@ -154,7 +154,8 @@ public class NanoBroker {
 	public void publish(String localClientId, String topic, String message) {
 		if (LOG.isDebugEnabled())
 			LOG.debug("called local publish()");
-		String msg = "#msg#"+localClientId+"#" + topic + "#" + message + "#";
+		String msg = "#msg#" + localClientId + "#" + topic + "#" + message
+				+ "#";
 		internalMessage InMsg = internalMessage.parse(msg);
 		netOutgoingQueue.putMessage(InMsg);
 		localCallQueue.putMessage(InMsg);
@@ -232,12 +233,13 @@ public class NanoBroker {
 		public void shutdown() {
 			this.running = false;
 		}
-		
+
 		@Override
 		public void run() {
 
 			while (running) {
-				if(LOG.isDebugEnabled()) LOG.debug("reading local call queue");
+				if (LOG.isDebugEnabled())
+					LOG.debug("reading local call queue");
 				internalMessage inMsg = localCallQueue.getMessage();
 
 				// publish local
@@ -386,13 +388,13 @@ public class NanoBroker {
 					String operation = inMsg.msgType;
 
 					if (operation.equals("msg")) {
-						LOG.debug("msg received");
+						LOG.debug("message (msg) received");
 						netOutgoingQueue.putMessage(inMsg);
 						localCallQueue.putMessage(inMsg);
 					}
 
 					if (operation.equals("sub")) {
-						LOG.debug("sub received");
+						LOG.debug("subscribe (sub) received");
 						String clientId = inMsg.clientId;
 						String topic = inMsg.topic;
 						// add client to list of known clients
@@ -419,7 +421,7 @@ public class NanoBroker {
 					}
 
 					if (operation.equals("unsub")) {
-						LOG.debug("unsub received");
+						LOG.debug("unsubscribe (unsub) received");
 						String clientId = inMsg.clientId;
 						String topic = inMsg.topic;
 						if (topics.containsKey(topic)) {
@@ -439,11 +441,11 @@ public class NanoBroker {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				LOG.info("closing UDP Receiver socket");
-				sock.close();
-				LOG.info("leaving UDP receiver thread");
 
 			}
+			LOG.info("closing UDP Receiver socket");
+			sock.close();
+			LOG.info("leaving UDP receiver thread");
 		}
 	}
 
