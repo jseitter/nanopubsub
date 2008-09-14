@@ -32,7 +32,7 @@ public class NanoPubSubClient {
 
 	private static final Logger LOG = Logger.getLogger("NanoPubSubClient");
 	
-	private DatagramSocket client = null;
+	private DatagramSocket clientSocket = null;
 	private byte[] packetBuffer = new byte[1024];
 	private DatagramPacket packet = new DatagramPacket(packetBuffer,
 			packetBuffer.length);
@@ -55,7 +55,7 @@ public class NanoPubSubClient {
 	public void connect(String hostname) {
 		try {
 			this.host = InetAddress.getByName(hostname);
-			client = new DatagramSocket();
+			clientSocket = new DatagramSocket();
 		} catch (SocketException e) {
 			throw new RuntimeException(e);
 		} catch (UnknownHostException e) {
@@ -64,13 +64,14 @@ public class NanoPubSubClient {
 	}
 
 	public void publish(String topic, String message) {
+		if(clientSocket==null) throw new RuntimeException("Client not connected");
 		String msg = "#msg#" + clientId + "#" + topic + "#" + message + "#";
 		byte[] data = msg.getBytes();
 		packet.setAddress(host);
 		packet.setPort(11011);
 		packet.setData(data);
 		try {
-			client.send(packet);
+			clientSocket.send(packet);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -79,13 +80,14 @@ public class NanoPubSubClient {
 	}
 
 	public void subscribe(String topic, INanoPubSubCallback handler) {
+		if(clientSocket==null) throw new RuntimeException("Client not connected");
 		String msg = "#sub#" + clientId + "#" + topic + "#";
 		byte[] data = msg.getBytes();
 		packet.setAddress(host);
 		packet.setPort(11011);
 		packet.setData(data);
 		try {
-			client.send(packet);
+			clientSocket.send(packet);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -96,13 +98,14 @@ public class NanoPubSubClient {
 	}
 
 	public void unsubscribe(String topic) {
+		if(clientSocket==null) throw new RuntimeException("Client not connected");
 		String msg = "#unsub#" + clientId + "#" + topic + "#";
 		byte[] data = msg.getBytes();
 		packet.setAddress(host);
 		packet.setPort(11011);
 		packet.setData(data);
 		try {
-			client.send(packet);
+			clientSocket.send(packet);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
