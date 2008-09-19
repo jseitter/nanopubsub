@@ -1,0 +1,17 @@
+==============================================================================
+nanoPubSub
+Version 0.1
+==============================================================================
+
+COMPILATION:
+	make all
+
+	The libnanopubsub static library and the nanopubsub-client executable are
+	then built in the ./build directory.
+
+
+USAGE:
+	nanopubsub-client --help
+	
+	This command will display a summary of available command line parameters
+	for the client program.
