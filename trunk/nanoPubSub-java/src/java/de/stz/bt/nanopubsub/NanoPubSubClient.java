@@ -47,18 +47,16 @@ public class NanoPubSubClient {
 		this.clientId = clientId;
 	}
 
-	public NanoPubSubClient(String clientId, String hostname) {
+	public NanoPubSubClient(String clientId, String hostname) throws UnknownHostException {
 		this.clientId = clientId;
 		this.connect(hostname);
 	}
 
-	public void connect(String hostname) {
+	public void connect(String hostname) throws UnknownHostException {
 		try {
 			this.host = InetAddress.getByName(hostname);
 			clientSocket = new DatagramSocket();
 		} catch (SocketException e) {
-			throw new RuntimeException(e);
-		} catch (UnknownHostException e) {
 			throw new RuntimeException(e);
 		}
 	}

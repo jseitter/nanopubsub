@@ -73,16 +73,23 @@ public class NanoBroker {
 	}
 
 	public NanoBroker() {
-		// initialize the Broker
-		brokerInit();
-	}
-
-	private void brokerInit() {
+		// initialize the Broker		
 		senderWorker = new BrokerUDPSenderWorker();
 		senderWorker.start();
 		localCallWorker = new BrokerLocalCallWorker();
 		localCallWorker.start();
 		receiverWorker = new BrokerUDPReceiverWorker();
+		receiverWorker.start();
+	}
+	
+	public NanoBroker(int receiverUdpPort){
+		// initialize the Broker	
+		senderWorker = new BrokerUDPSenderWorker();
+		senderWorker.start();
+		localCallWorker = new BrokerLocalCallWorker();
+		localCallWorker.start();
+		receiverWorker = new BrokerUDPReceiverWorker();
+		receiverWorker.port=receiverUdpPort;
 		receiverWorker.start();
 	}
 
@@ -462,7 +469,7 @@ class internalMessage implements Serializable {
 	 */
 	private static final long serialVersionUID = -3829990036989058804L;
 	/**
-	 * Typoe of message
+	 * Type of message
 	 */
 	String msgType;
 	/**
@@ -479,8 +486,7 @@ class internalMessage implements Serializable {
 	String message;
 
 	/**
-	 * parse a message string into an internalMessage objecz
-	 * 
+	 * parse a message string into an internalMessage object
 	 * @param msg
 	 *            the input String
 	 * @return internalMessage object

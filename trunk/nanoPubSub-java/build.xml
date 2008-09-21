@@ -25,7 +25,7 @@
 	
 	<target name="compile">
 		<mkdir dir="build"/>
-		<javac classpath="lib/log4j-1.2.13.jar" destdir="build/" srcdir="src/java"/>
+		<javac classpath="lib/log4j-1.2.13.jar:lib/commons-cli-1.1.jar" destdir="build/" srcdir="src/java"/>
 	</target>
 
 </project>
