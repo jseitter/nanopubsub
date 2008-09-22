@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.StringTokenizer;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
@@ -73,7 +74,7 @@ public class NanoBroker {
 	}
 
 	public NanoBroker() {
-		// initialize the Broker		
+		// initialize the Broker
 		senderWorker = new BrokerUDPSenderWorker();
 		senderWorker.start();
 		localCallWorker = new BrokerLocalCallWorker();
@@ -81,15 +82,15 @@ public class NanoBroker {
 		receiverWorker = new BrokerUDPReceiverWorker();
 		receiverWorker.start();
 	}
-	
-	public NanoBroker(int receiverUdpPort){
-		// initialize the Broker	
+
+	public NanoBroker(int receiverUdpPort) {
+		// initialize the Broker
 		senderWorker = new BrokerUDPSenderWorker();
 		senderWorker.start();
 		localCallWorker = new BrokerLocalCallWorker();
 		localCallWorker.start();
 		receiverWorker = new BrokerUDPReceiverWorker();
-		receiverWorker.port=receiverUdpPort;
+		receiverWorker.port = receiverUdpPort;
 		receiverWorker.start();
 	}
 
@@ -235,16 +236,16 @@ public class NanoBroker {
 	class BrokerLocalCallWorker extends Thread {
 		private final Logger LOG = Logger.getLogger("BrokerLocalCallWorker");
 
-		private boolean running = true;
+		private AtomicBoolean running = new AtomicBoolean(true);
 
 		public void shutdown() {
-			this.running = false;
+			this.running.set(false);
 		}
 
 		@Override
 		public void run() {
 
-			while (running) {
+			while (running.get()) {
 				if (LOG.isDebugEnabled())
 					LOG.debug("reading local call queue");
 				internalMessage inMsg = localCallQueue.getMessage();
@@ -280,14 +281,14 @@ public class NanoBroker {
 		private final Logger LOG = Logger.getLogger("BrokerUDPSenderWorker");
 
 		private DatagramSocket sock;
-		private boolean running = true;
+		private AtomicBoolean running = new AtomicBoolean(true);
 
 		private byte[] packetBuffer = new byte[1024];
 		DatagramPacket packet = new DatagramPacket(packetBuffer,
 				packetBuffer.length);
 
 		public void shutdown() {
-			this.running = false;
+			this.running.set(false);
 		}
 
 		@Override
@@ -302,7 +303,7 @@ public class NanoBroker {
 				throw new RuntimeException(e);
 			}
 
-			while (running) {
+			while (running.get()) {
 				if (LOG.isDebugEnabled())
 					LOG.debug("reading send queue");
 				internalMessage message = netOutgoingQueue.getMessage();
@@ -358,14 +359,14 @@ public class NanoBroker {
 		int port = 11011;
 		private final Logger LOG = Logger.getLogger("BrokerUDPReceiverWorker");
 		private DatagramSocket sock;
-		private boolean running = true;
+		private AtomicBoolean running = new AtomicBoolean(true);
 
 		private byte[] packetBuffer = new byte[1024];
 		DatagramPacket packet = new DatagramPacket(packetBuffer,
 				packetBuffer.length);
 
 		public void shutdown() {
-			this.running = false;
+			this.running.set(false);
 		}
 
 		public void run() {
@@ -381,10 +382,8 @@ public class NanoBroker {
 				throw new RuntimeException(e);
 			}
 
-			while (running) {
-
+			while (running.get()) {
 				try {
-
 					sock.receive(packet);
 					InetAddress sender = packet.getAddress();
 					int datalength = packet.getLength();
@@ -424,7 +423,6 @@ public class NanoBroker {
 							LOG.info("Client " + clientId
 									+ " subscribed existing " + topic);
 						}
-
 					}
 
 					if (operation.equals("unsub")) {
@@ -448,7 +446,6 @@ public class NanoBroker {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-
 			}
 			LOG.info("closing UDP Receiver socket");
 			sock.close();
@@ -487,6 +484,7 @@ class internalMessage implements Serializable {
 
 	/**
 	 * parse a message string into an internalMessage object
+	 * 
 	 * @param msg
 	 *            the input String
 	 * @return internalMessage object
